@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Threaded {
-    static private ArrayList<String> names = new ArrayList<>() {
+    static public ArrayList<String> names = new ArrayList<>() {
         {
             add("name_1");
             add("name_2");
@@ -60,8 +60,9 @@ public class Threaded {
 
         } while (tr);
         //weak point
+        long start = System.currentTimeMillis();
         executor.invokeAll(callableTasks)
-                .stream()
+                .parallelStream()
                 .map(future -> {
                     try {
                         return future.get();
@@ -70,11 +71,12 @@ public class Threaded {
                     }
                 })
                 .forEach(res::add);
+        long end = System.currentTimeMillis();
         long sum = 0;
         for (long i : res)
             sum += i;
         executor.shutdown();
-        return ("NumOfThreads =" + numOfThreads + "; Time = " + sum);
+        return ("NumOfThreads =" + numOfThreads + "; Time = " + (end-start));
     }
 
     static public String ExecuteThreaded(int numOfThreads, String dest) throws InterruptedException {
@@ -108,8 +110,9 @@ public class Threaded {
 
         } while (tr);
         //weak point
+        long start = System.currentTimeMillis();
         executor.invokeAll(callableTasks)
-                .stream()
+                .parallelStream()
                 .map(future -> {
                     try {
                         return future.get();
@@ -118,11 +121,12 @@ public class Threaded {
                     }
                 })
                 .forEach(res::add);
+        long end = System.currentTimeMillis();
         long sum = 0;
         for (long i : res)
             sum += i;
         executor.shutdown();
-        return ("NumOfThreads =" + numOfThreads + "; Time = " + sum);
+        return ("NumOfThreads =" + numOfThreads + "; Time = " + (end-start));
     }
 
 }

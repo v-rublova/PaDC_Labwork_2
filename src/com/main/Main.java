@@ -15,18 +15,18 @@ public class Main {
         //single thread download
         /*byte i = 0;
         for (String url : WorkWithImages.getUrls()) {
-            WorkWithImages.DownloadImage(url, names.get(i));
+            WorkWithImages.DownloadImage(url, Threaded.names.get(i));
             i++;
         }
         //single thread filesystem
         i = 0;
-        for (byte j = 0; j < names.size(); j++) {
-            WorkWithImages.RebaseImage("output/" + names.get(i) + ".jpg", "rebase", names.get(i));
+        for (byte j = 0; j < Threaded.names.size(); j++) {
+            WorkWithImages.RebaseImage("output/" + Threaded.names.get(i) + ".jpg", "rebase", Threaded.names.get(i));
             i++;
         }*/
         for (int i = 0; i < 10; i++) {
-            System.out.println("Load: "+Threaded.ExecuteThreaded(10));
-            System.out.println("Base: "+Threaded.ExecuteThreaded(10, "rebase"));
+            System.out.println("Load: "+Threaded.ExecuteThreaded(4));
+            System.out.println("Base: "+Threaded.ExecuteThreaded(4, "rebase"));
 
         }
 
