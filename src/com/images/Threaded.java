@@ -31,75 +31,60 @@ public class Threaded {
     static public String ExecuteThreaded(int numOfThreads) throws InterruptedException {
         callableTasks = new ArrayList<>();
         WorkWithImages.CleanDir("output");
-        List<Long> res = new ArrayList<>();
         urls = WorkWithImages.getUrls();
         ExecutorService executor = Executors.newFixedThreadPool(numOfThreads);
+
         boolean tr = true;
         int low_b = 0;
         byte chunk = (byte) Math.ceil(names.size() / (double) numOfThreads);
         int high_b = chunk;
+
         do {
             if (high_b == names.size()) tr = false;
             int finalLow_b = low_b;
             int finalHigh_b = high_b;
             callableTasks.add(() ->
                     {
-                        long start = System.currentTimeMillis();
                         for (int i = finalLow_b; i < finalHigh_b; i++)
                             WorkWithImages.DownloadImage(urls.get(i), names.get(i));
-                        long end = System.currentTimeMillis();
-                        return (end - start);
+                        return null;
                     }
             );
             low_b = high_b;
             if (high_b + chunk <= names.size()) high_b += chunk;
             else {
                 high_b = names.size();
-
             }
-
         } while (tr);
-        //weak point
+
         long start = System.currentTimeMillis();
-        executor.invokeAll(callableTasks)
-                .parallelStream()
-                .map(future -> {
-                    try {
-                        return future.get();
-                    } catch (Exception e) {
-                        throw new IllegalStateException(e);
-                    }
-                })
-                .forEach(res::add);
+        executor.invokeAll(callableTasks);
         long end = System.currentTimeMillis();
-        long sum = 0;
-        for (long i : res)
-            sum += i;
         executor.shutdown();
-        return ("NumOfThreads =" + numOfThreads + "; Time = " + (end-start));
+
+        return ("NumOfThreads =" + numOfThreads + "; Time = " + (end - start));
     }
 
     static public String ExecuteThreaded(int numOfThreads, String dest) throws InterruptedException {
-        callableTasks = new ArrayList<>();
-        WorkWithImages.CleanDir(dest);
-        List<Long> res = new ArrayList<>();
 
+        WorkWithImages.CleanDir(dest);
+        callableTasks = new ArrayList<>();
         ExecutorService executor = Executors.newFixedThreadPool(numOfThreads);
+
         boolean tr = true;
         int low_b = 0;
         byte chunk = (byte) Math.ceil(names.size() / (double) numOfThreads);
         int high_b = chunk;
+
         do {
             if (high_b == names.size()) tr = false;
             int finalLow_b = low_b;
             int finalHigh_b = high_b;
             callableTasks.add(() ->
                     {
-                        long start = System.currentTimeMillis();
                         for (int i = finalLow_b; i < finalHigh_b; i++)
                             WorkWithImages.RebaseImage("output/" + names.get(i) + ".jpg", dest, names.get(i));
-                        long end = System.currentTimeMillis();
-                        return (end - start);
+                        return null;
                     }
             );
             low_b = high_b;
@@ -107,26 +92,13 @@ public class Threaded {
             else {
                 high_b = names.size();
             }
-
         } while (tr);
-        //weak point
-        long start = System.currentTimeMillis();
-        executor.invokeAll(callableTasks)
-                .parallelStream()
-                .map(future -> {
-                    try {
-                        return future.get();
-                    } catch (Exception e) {
-                        throw new IllegalStateException(e);
-                    }
-                })
-                .forEach(res::add);
-        long end = System.currentTimeMillis();
-        long sum = 0;
-        for (long i : res)
-            sum += i;
-        executor.shutdown();
-        return ("NumOfThreads =" + numOfThreads + "; Time = " + (end-start));
-    }
 
+        long start = System.currentTimeMillis();
+        executor.invokeAll(callableTasks);
+        long end = System.currentTimeMillis();
+        executor.shutdown();
+
+        return ("NumOfThreads =" + numOfThreads + "; Time = " + (end - start));
+    }
 }
